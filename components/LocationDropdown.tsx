@@ -36,17 +36,6 @@ export default function LocationDropdown({
           ))}
         </SelectContent>
       </Select>
-
-      {selectedLocation && (
-        <div className="mt-3 p-3 bg-blue-50 rounded-md">
-          <p className="text-xs text-blue-700 font-medium">
-            Currently viewing:
-          </p>
-          <p className="text-sm text-blue-800 mt-1">
-            {formatLocationName(selectedLocation)}
-          </p>
-        </div>
-      )}
     </div>
   );
 }
