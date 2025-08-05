@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import TimeSlotPicker from "@/components/TimeSlotPicker";
 import SelectedSlotsEmailForm from "@/components/SelectedSlotsEmailForm";
 import LocationSidebar from "@/components/LocationSidebar";
+import LocationDropdown from "@/components/LocationDropdown";
 import { type TimeSlotPreference } from "@/lib/actions";
 
 interface CourtAvailability {
@@ -149,16 +150,29 @@ export default function CourtAvailabilityView({
   };
 
   return (
-    <div className="flex gap-6">
-      <LocationSidebar
-        uniqueLocations={uniqueLocations}
-        selectedLocation={selectedLocation}
-        onLocationSelect={setSelectedLocation}
-        formatLocationName={formatLocationName}
-      />
+    <div className="flex flex-col lg:flex-row gap-6">
+      {/* Desktop Sidebar - hidden on mobile */}
+      <div className="hidden lg:block">
+        <LocationSidebar
+          uniqueLocations={uniqueLocations}
+          selectedLocation={selectedLocation}
+          onLocationSelect={setSelectedLocation}
+          formatLocationName={formatLocationName}
+        />
+      </div>
 
       {/* Main Content */}
       <div className="flex-1">
+        {/* Mobile Dropdown - hidden on desktop */}
+        <div className="block lg:hidden">
+          <LocationDropdown
+            uniqueLocations={uniqueLocations}
+            selectedLocation={selectedLocation}
+            onLocationSelect={setSelectedLocation}
+            formatLocationName={formatLocationName}
+          />
+        </div>
+
         {selectedLocation ? (
           <div>
             <TimeSlotPicker

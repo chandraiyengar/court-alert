@@ -10,6 +10,7 @@
     "fetch-bookings": "tsx scripts/fetch-booking-times.ts"
   },
   "dependencies": {
+    "@radix-ui/react-select": "^2.2.5",
     "@radix-ui/react-slot": "^1.2.3",
     "@supabase/ssr": "^0.6.1",
     "class-variance-authority": "^0.7.1",
