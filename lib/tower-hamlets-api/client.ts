@@ -1,6 +1,13 @@
+// defining that we need date spaces time location
+import { SlotInfo } from "../better-api/transformer";
+
 export interface TowerHamletSession {
   startTime: string;
   spaces: number;
+}
+
+export interface TowerHamletsBookingResponse {
+  data: SlotInfo[];
 }
 
 export class TowerHamletsApiClient {
@@ -12,10 +19,10 @@ export class TowerHamletsApiClient {
     return url;
   }
 
-  static async getBookingAvailability(
+  static async fetchBookingTimes(
     date: string,
     location: string
-  ): Promise<TowerHamletSession[]> {
+  ): Promise<TowerHamletsBookingResponse> {
     const url = `${this.getBaseUrl()}/${location}/${date}`;
 
     try {
@@ -34,7 +41,15 @@ export class TowerHamletsApiClient {
         contentLength: htmlContent.length,
       });
 
-      return this.transformHtmlResponse(htmlContent);
+      const sessions = this.transformHtmlResponse(htmlContent);
+      const validSlots = this.validateSessions(sessions, location, date);
+      const slotInfoArray = this.transformToSlotInfo(
+        validSlots,
+        location,
+        date
+      );
+
+      return { data: slotInfoArray };
     } catch (error) {
       console.error(
         `❌ Error fetching Tower Hamlets booking availability for ${location} on ${date}:`,
@@ -42,6 +57,18 @@ export class TowerHamletsApiClient {
       );
       throw error;
     }
+  }
+
+  // Legacy method for backwards compatibility
+  static async getBookingAvailability(
+    date: string,
+    location: string
+  ): Promise<TowerHamletSession[]> {
+    const response = await this.fetchBookingTimes(date, location);
+    return response.data.map((slot) => ({
+      startTime: slot.time.substring(0, 5), // Convert HH:MM:SS to HH:MM
+      spaces: slot.spaces,
+    }));
   }
 
   private static transformHtmlResponse(
@@ -116,6 +143,47 @@ export class TowerHamletsApiClient {
       console.error("❌ Error parsing HTML response:", error);
       return sessions;
     }
+  }
+
+  private static validateSessions(
+    sessions: TowerHamletSession[],
+    location: string,
+    date: string
+  ): TowerHamletSession[] {
+    if (!sessions || sessions.length === 0) {
+      console.warn(`⚠️  No time slots found for ${location} on ${date}`);
+      return [];
+    }
+
+    const validSessions = sessions.filter(
+      (session) =>
+        session &&
+        typeof session === "object" &&
+        session.startTime &&
+        typeof session.spaces === "number" &&
+        session.spaces >= 0
+    );
+
+    if (validSessions.length !== sessions.length) {
+      console.warn(
+        `⚠️  Filtered out ${sessions.length - validSessions.length} invalid slots for ${location} on ${date}`
+      );
+    }
+
+    return validSessions;
+  }
+
+  private static transformToSlotInfo(
+    sessions: TowerHamletSession[],
+    location: string,
+    date: string
+  ): SlotInfo[] {
+    return sessions.map((session) => ({
+      date: date,
+      time: `${session.startTime}:00`, // Ensure HH:MM:SS format
+      location: location,
+      spaces: session.spaces,
+    }));
   }
 
   private static parseTimeToStandardFormat(timeText: string): string | null {
