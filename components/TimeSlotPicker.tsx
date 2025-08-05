@@ -77,18 +77,11 @@ export default function TimeSlotPicker({
   // Format time for display
   const formatTime = (timeString: string) => {
     const hour = parseInt(timeString.split(":")[0], 10);
-    const nextHour = hour + 1;
 
     const displayStart =
       hour > 12 ? `${hour - 12} PM` : hour === 12 ? `12 PM` : `${hour} AM`;
-    const displayEnd =
-      nextHour > 12
-        ? `${nextHour - 12} PM`
-        : nextHour === 12
-          ? `12 PM`
-          : `${nextHour} AM`;
 
-    return `${displayStart} - ${displayEnd}`;
+    return displayStart;
   };
 
   // Handle slot selection/deselection
