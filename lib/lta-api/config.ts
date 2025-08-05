@@ -132,6 +132,39 @@ export const LTA_VENUE_CONFIGS: LtaVenueConfig[] = [
     },
     timezone: "Europe/London",
   },
+  {
+    id: "ravenscourt-park",
+    name: "Ravenscourt Park",
+    venue: "RavenscourtPark",
+    displayName: "Ravenscourt Park Tennis",
+    operatingHours: {
+      startTime: "07:00",
+      endTime: "22:00",
+    },
+    timezone: "Europe/London",
+  },
+  {
+    id: "spring-hill-park",
+    name: "Spring Hill Park",
+    venue: "SpringHillParkTennis",
+    displayName: "Spring Hill Park Tennis",
+    operatingHours: {
+      startTime: "07:00",
+      endTime: "22:00",
+    },
+    timezone: "Europe/London",
+  },
+  {
+    id: "tanner-street-park",
+    name: "Tanner Street Park",
+    venue: "TannerStPark",
+    displayName: "Tanner Street Park Tennis",
+    operatingHours: {
+      startTime: "07:00",
+      endTime: "22:00",
+    },
+    timezone: "Europe/London",
+  },
 ];
 
 export function getLtaVenueConfig(venueId: string): LtaVenueConfig | undefined {
