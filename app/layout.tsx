@@ -13,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tennis Booking London",
-  description: "Book your tennis court in London",
+  title: "Court Alert - Tennis Court Availability Notifications",
+  description:
+    "Get notified when tennis courts become available in London. Monitor court availability across multiple venues and receive email alerts for your preferred time slots.",
 };
 
 export default function RootLayout({

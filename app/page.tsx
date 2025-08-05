@@ -58,10 +58,11 @@ export default async function Home() {
     <div className="container mx-auto p-4 max-w-7xl">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-center mb-2">
-          Get Notified When Courts Become Available
+          Tennis Court Alerts
         </h1>
         <p className="text-muted-foreground text-center text-sm">
-          Select time slots to be notified when courts become available
+          Monitor tennis court availability across London venues and get instant
+          email alerts when your preferred time slots become available
         </p>
       </div>
 
