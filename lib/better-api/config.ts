@@ -84,6 +84,31 @@ export const VENUE_CONFIGS: VenueConfig[] = [
         })(),
     timezone: "Europe/London",
   },
+  {
+    id: "lee-valley-hockey-and-tennis-centre",
+    name: "Lee Valley Hockey and Tennis Centre",
+    venue: "lee-valley-hockey-and-tennis-centre",
+    activities: [
+      {
+        id: "tennis-court-indoor",
+        name: "Indoor Tennis",
+        activity: "tennis-court-indoor",
+        displayName: "Tennis Court (Indoor)",
+        operatingHours: {
+          startTime: "07:00",
+          endTime: "23:00",
+        },
+      },
+    ],
+    bookingUrl: process.env.NEXT_PUBLIC_BETTER_BOOKINGS_URL
+      ? process.env.NEXT_PUBLIC_BETTER_BOOKINGS_URL + "/location"
+      : (() => {
+          throw new Error(
+            "NEXT_PUBLIC_BETTER_BOOKINGS_URL environment variable is not set"
+          );
+        })(),
+    timezone: "Europe/London",
+  },
   // Add more venues here as needed
   // {
   //   id: "another-venue",
