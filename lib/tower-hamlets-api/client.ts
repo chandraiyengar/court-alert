@@ -84,7 +84,13 @@ export class TowerHamletsApiClient {
           /<label[^>]*class="court"[^>]*>[\s\S]*?<\/label>/gi
         );
 
-        if (!courtMatches) continue;
+        if (!courtMatches) {
+          sessions.push({
+            startTime,
+            spaces: 0,
+          });
+          continue;
+        }
 
         let availableSpaces = 0;
 
