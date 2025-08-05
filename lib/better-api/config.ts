@@ -58,10 +58,20 @@ export const VENUE_CONFIGS: VenueConfig[] = [
         id: "rosemary-gardens-tennis",
         name: "Rosemary Gardens Tennis",
         activity: "rosemary-gardens-tennis",
-        displayName: "Rosemary Gardens Tennis (Outdoor)",
+        displayName: "Rosemary Gardens Tennis",
         operatingHours: {
           startTime: "08:00",
           endTime: "22:00",
+        },
+      },
+      {
+        id: "tufnell-park-tennis",
+        name: "Tufnell Park Tennis",
+        activity: "tufnell-park-tennis",
+        displayName: "Tufnell Park Tennis",
+        operatingHours: {
+          startTime: "08:00",
+          endTime: "21:00",
         },
       },
     ],
