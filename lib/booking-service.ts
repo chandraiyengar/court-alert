@@ -6,12 +6,10 @@ import { NotificationService } from "./notifications/service";
 
 export interface BookingServiceOptions {
   daysToFetch?: number;
-  testMode?: boolean;
 }
 
 export interface BookingServiceResult {
   success: boolean;
-  testMode: boolean;
   totalSlots: number;
   newlyAvailable: number;
   notificationsSent: number;
@@ -26,30 +24,24 @@ export class BookingService {
   static async processBookings(
     options: BookingServiceOptions = {}
   ): Promise<BookingServiceResult> {
-    const { daysToFetch = 6, testMode = false } = options;
+    const { daysToFetch = 6 } = options;
     const processingTime = new Date().toISOString();
 
     try {
       console.log(`🎾 Starting booking processing for ${daysToFetch} days...`);
 
       // Generate date range
-      const dates = DataTransformer.generateDateRange(
-        new Date(),
-        testMode ? 1 : daysToFetch
-      );
+      const dates = DataTransformer.generateDateRange(new Date(), daysToFetch);
 
       // Get all venue activities
       const venueActivities = getAllVenueActivities();
-      const activitiesToProcess = testMode
-        ? venueActivities.slice(0, 1)
-        : venueActivities;
 
       console.log(
-        `📊 Fetching slots for ${activitiesToProcess.length} venue + activity combinations across ${dates.length} dates`
+        `📊 Fetching slots for ${venueActivities.length} venue + activity combinations across ${dates.length} dates`
       );
 
       // Fetch and process all slots
-      const allSlots = await this.fetchAllSlots(dates, activitiesToProcess);
+      const allSlots = await this.fetchAllSlots(dates, venueActivities);
       console.log(`📊 Total slots found: ${allSlots.length}`);
 
       // Get previous state and compare
@@ -63,41 +55,30 @@ export class BookingService {
       let notificationsSent = 0;
       if (newlyAvailable.length > 0) {
         console.log(`🆕 Found ${newlyAvailable.length} newly available courts`);
-        notificationsSent = await this.handleNotifications(
-          newlyAvailable,
-          testMode
-        );
+        notificationsSent = await this.handleNotifications(newlyAvailable);
         this.logNewlyAvailableSlots(newlyAvailable);
       } else {
         console.log("😔 No newly available courts found");
       }
 
       // Update database
-      if (!testMode) {
-        await DatabaseOperations.updateState(allSlots);
-        console.log("✅ Database updated successfully");
-      } else {
-        console.log("🧪 Test mode: Skipping database update");
-      }
+      await DatabaseOperations.updateState(allSlots);
+      console.log("✅ Database updated successfully");
 
       return {
         success: true,
-        testMode,
         totalSlots: allSlots.length,
         newlyAvailable: newlyAvailable.length,
         notificationsSent,
         processingTime,
         sampleSlots: allSlots.slice(0, 5),
         datesProcessed: dates,
-        activitiesProcessed: activitiesToProcess.map(
-          (a) => a.activity.displayName
-        ),
+        activitiesProcessed: venueActivities.map((a) => a.activity.displayName),
       };
     } catch (error) {
       console.error("❌ Booking processing failed:", error);
       return {
         success: false,
-        testMode,
         totalSlots: 0,
         newlyAvailable: 0,
         notificationsSent: 0,
@@ -175,8 +156,7 @@ export class BookingService {
   }
 
   private static async handleNotifications(
-    newlyAvailable: NewlyAvailableSlot[],
-    testMode: boolean
+    newlyAvailable: NewlyAvailableSlot[]
   ): Promise<number> {
     const preferences = await NotificationService.getUserPreferences();
 
@@ -195,9 +175,7 @@ export class BookingService {
       return 0;
     }
 
-    if (!testMode) {
-      await NotificationService.sendNotificationEmails(matches);
-    }
+    await NotificationService.sendNotificationEmails(matches);
 
     console.log(NotificationService.formatNotificationSummary(matches));
     return matches.length;
