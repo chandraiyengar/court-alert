@@ -3,7 +3,6 @@ import { BookingService } from "@/lib/booking-service";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const testMode = searchParams.get("test") === "true";
   const daysParam = searchParams.get("days");
   const daysToFetch = daysParam ? parseInt(daysParam) : 6;
 
@@ -17,7 +16,6 @@ export async function GET(request: NextRequest) {
 
   const result = await BookingService.processBookings({
     daysToFetch,
-    testMode,
   });
 
   if (!result.success) {
