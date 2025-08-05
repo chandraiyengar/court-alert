@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import TimeSlotPicker from "@/components/TimeSlotPicker";
 import SelectedSlotsEmailForm from "@/components/SelectedSlotsEmailForm";
+import LocationSidebar from "@/components/LocationSidebar";
 import { type TimeSlotPreference } from "@/lib/actions";
 
 interface CourtAvailability {
@@ -149,47 +150,12 @@ export default function CourtAvailabilityView({
 
   return (
     <div className="flex gap-6">
-      {/* Sidebar */}
-      <div className="w-64 flex-shrink-0">
-        <div className="bg-white rounded-lg shadow-sm border p-4 sticky top-4">
-          <h2 className="text-lg font-semibold mb-4 text-gray-800">
-            Select Location
-          </h2>
-
-          {uniqueLocations.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              No locations available
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {uniqueLocations.map((location) => (
-                <button
-                  key={location}
-                  onClick={() => setSelectedLocation(location)}
-                  className={`w-full text-left px-3 py-2 rounded-md transition-colors text-sm ${
-                    selectedLocation === location
-                      ? "bg-blue-100 text-blue-800 border border-blue-300"
-                      : "bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200"
-                  }`}
-                >
-                  {formatLocationName(location)}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {selectedLocation && (
-            <div className="mt-4 p-3 bg-blue-50 rounded-md">
-              <p className="text-xs text-blue-700 font-medium">
-                Currently viewing:
-              </p>
-              <p className="text-sm text-blue-800 mt-1">
-                {formatLocationName(selectedLocation)}
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
+      <LocationSidebar
+        uniqueLocations={uniqueLocations}
+        selectedLocation={selectedLocation}
+        onLocationSelect={setSelectedLocation}
+        formatLocationName={formatLocationName}
+      />
 
       {/* Main Content */}
       <div className="flex-1">
