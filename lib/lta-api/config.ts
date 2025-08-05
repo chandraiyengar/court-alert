@@ -22,7 +22,116 @@ export const LTA_VENUE_CONFIGS: LtaVenueConfig[] = [
     },
     timezone: "Europe/London",
   },
-  // Add more LTA venues here as needed
+  {
+    id: "hackney-downs",
+    name: "Hackney Downs",
+    venue: "HackneyDowns",
+    displayName: "Hackney Downs Park Tennis",
+    operatingHours: {
+      startTime: "07:00",
+      endTime: "22:00",
+    },
+    timezone: "Europe/London",
+  },
+  {
+    id: "brockwell-park",
+    name: "Brockwell Park",
+    venue: "brockwellpark",
+    displayName: "Brockwell Park Tennis",
+    operatingHours: {
+      startTime: "07:00",
+      endTime: "22:00",
+    },
+    timezone: "Europe/London",
+  },
+  {
+    id: "burgess-park-southwark",
+    name: "Burgess Park Southwark",
+    venue: "BurgessParkSouthwark",
+    displayName: "Burgess Park Southwark Tennis",
+    operatingHours: {
+      startTime: "07:00",
+      endTime: "22:00",
+    },
+    timezone: "Europe/London",
+  },
+  {
+    id: "clapham-common",
+    name: "Clapham Common",
+    venue: "claphamcommon",
+    displayName: "Clapham Common Tennis",
+    operatingHours: {
+      startTime: "07:00",
+      endTime: "22:00",
+    },
+    timezone: "Europe/London",
+  },
+  {
+    id: "clissold-park-hackney",
+    name: "Clissold Park Hackney",
+    venue: "ClissoldParkHackney",
+    displayName: "Clissold Park Hackney Tennis",
+    operatingHours: {
+      startTime: "07:00",
+      endTime: "22:00",
+    },
+    timezone: "Europe/London",
+  },
+  {
+    id: "dulwich-park",
+    name: "Dulwich Park",
+    venue: "DulwichPark",
+    displayName: "Dulwich Park Tennis",
+    operatingHours: {
+      startTime: "07:00",
+      endTime: "22:00",
+    },
+    timezone: "Europe/London",
+  },
+  {
+    id: "holland-park",
+    name: "Holland Park",
+    venue: "HollandPark2",
+    displayName: "Holland Park Tennis",
+    operatingHours: {
+      startTime: "07:00",
+      endTime: "22:00",
+    },
+    timezone: "Europe/London",
+  },
+  {
+    id: "kennington-park",
+    name: "Kennington Park",
+    venue: "kenningtonpark",
+    displayName: "Kennington Park Tennis",
+    operatingHours: {
+      startTime: "07:00",
+      endTime: "22:00",
+    },
+    timezone: "Europe/London",
+  },
+  {
+    id: "larkhall-park",
+    name: "Larkhall Park",
+    venue: "LarkhallPark",
+    displayName: "Larkhall Park Tennis",
+    operatingHours: {
+      startTime: "07:00",
+      endTime: "22:00",
+    },
+    timezone: "Europe/London",
+  },
+  {
+    id: "parliament-hill-fields",
+    name: "Parliament Hill Fields",
+    venue: "ParliamentHillFieldsTennisCourts",
+    displayName: "Parliament Hill Fields Tennis Courts",
+    operatingHours: {
+      startTime: "07:00",
+      endTime: "22:00",
+    },
+    timezone: "Europe/London",
+  },
 ];
 
 export function getLtaVenueConfig(venueId: string): LtaVenueConfig | undefined {
