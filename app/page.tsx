@@ -61,7 +61,7 @@ export default async function Home() {
           Get Notified When Courts Become Available
         </h1>
         <p className="text-muted-foreground text-center text-sm">
-          Select full time slots to be notified when courts become available
+          Select time slots to be notified when courts become available
         </p>
       </div>
 
