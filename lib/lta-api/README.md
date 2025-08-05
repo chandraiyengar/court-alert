@@ -22,7 +22,7 @@ Add venues in `config.ts`:
 }
 ```
 
-Set environment variable: `NEXT_PUBLIC_LTA_BOOKINGS_URL=https://clubspark.lta.org.uk/v0/VenueBooking`
+Set environment variable: `LTA_ADMIN_API_URL=https://clubspark.lta.org.uk/v0/VenueBooking`
 
 ## How It Works
 

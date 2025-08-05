@@ -23,9 +23,7 @@ async function testLtaApi() {
   // Debug environment variables
   console.log("🔍 Environment check:");
   console.log(`   Working directory: ${process.cwd()}`);
-  console.log(
-    `   LTA URL: ${process.env.NEXT_PUBLIC_LTA_BOOKINGS_URL || "NOT SET"}`
-  );
+  console.log(`   LTA URL: ${process.env.LTA_ADMIN_API_URL || "NOT SET"}`);
   console.log();
 
   try {

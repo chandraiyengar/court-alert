@@ -30,11 +30,9 @@ export interface LtaApiResponse {
 
 export class LtaApiClient {
   private static getBaseUrl(): string {
-    const url = process.env.NEXT_PUBLIC_LTA_BOOKINGS_URL;
+    const url = process.env.LTA_ADMIN_API_URL;
     if (!url) {
-      throw new Error(
-        "Missing NEXT_PUBLIC_LTA_BOOKINGS_URL environment variable"
-      );
+      throw new Error("Missing LTA_ADMIN_API_URL environment variable");
     }
     return url;
   }
