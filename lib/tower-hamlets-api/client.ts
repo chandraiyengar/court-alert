@@ -71,6 +71,29 @@ export class TowerHamletsApiClient {
     }));
   }
 
+  static async getAllBookingTimes(): Promise<TowerHamletsBookingResponse[]> {
+    const venues = this.getVenues();
+    const dates = this.getDates();
+    const allResponses: TowerHamletsBookingResponse[] = [];
+
+    try {
+      const fetchPromises = venues.flatMap((venue) =>
+        dates.map((date) => this.fetchBookingTimes(date, venue))
+      );
+
+      const responses = await Promise.all(fetchPromises);
+      allResponses.push(...responses);
+
+      console.log(
+        `✅ Fetched booking times for ${venues.length} venues across ${dates.length} days`
+      );
+      return allResponses;
+    } catch (error) {
+      console.error("❌ Error fetching all booking times:", error);
+      throw error;
+    }
+  }
+
   private static transformHtmlResponse(
     htmlContent: string
   ): TowerHamletSession[] {
@@ -143,6 +166,29 @@ export class TowerHamletsApiClient {
       console.error("❌ Error parsing HTML response:", error);
       return sessions;
     }
+  }
+
+  private static getVenues() {
+    return ["bethnal-green-gardens"];
+  }
+
+  private static getDates(): string[] {
+    const dates: string[] = [];
+
+    const today = new Date();
+    const ukToday = new Date(
+      today.toLocaleString("en-US", { timeZone: "Europe/London" })
+    );
+
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(ukToday);
+      date.setDate(ukToday.getDate() + i);
+
+      const dateString = date.toISOString().split("T")[0];
+      dates.push(dateString);
+    }
+
+    return dates;
   }
 
   private static validateSessions(
