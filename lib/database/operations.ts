@@ -32,8 +32,6 @@ export class DatabaseOperations {
   static async updateState(slots: SlotInfo[]): Promise<void> {
     if (slots.length === 0) {
       console.log("⚠️  No slots to update in database");
-      // Still clear the database even if no new slots, to remove past/invalid slots
-      await this.clearDatabase();
       return;
     }
 
@@ -42,19 +40,17 @@ export class DatabaseOperations {
 
     if (validatedSlots.length === 0) {
       console.warn("⚠️  No valid slots to store after validation");
-      // Still clear the database even if no valid slots, to remove past/invalid slots
-      await this.clearDatabase();
       return;
     }
 
     try {
-      // Always do a full overwrite to ensure past time slots are removed
-      console.log("🔄 Performing full database overwrite...");
-      await this.deleteAndInsert(validatedSlots);
+      // Use upsert to update existing records or insert new ones
+      console.log("🔄 Performing database upsert...");
+      await this.upsertSlots(validatedSlots);
 
       // Log sample data for verification
       console.log(
-        "📊 Sample stored data:",
+        "📊 Sample upserted data:",
         validatedSlots.slice(0, 3).map((slot) => ({
           date: slot.date,
           time: slot.time,
@@ -68,47 +64,21 @@ export class DatabaseOperations {
     }
   }
 
-  private static async clearDatabase(): Promise<void> {
+  private static async upsertSlots(validatedSlots: SlotInfo[]): Promise<void> {
     const supabase = await createClient();
 
-    const { error: deleteError } = await supabase
+    const { error: upsertError } = await supabase
       .from("court_availability")
-      .delete()
-      .neq("id", 0);
+      .upsert(validatedSlots, {
+        onConflict: "date,time,location",
+      });
 
-    if (deleteError) {
-      console.error("❌ Error clearing database:", deleteError);
-      throw deleteError;
+    if (upsertError) {
+      console.error("❌ Error upserting slots:", upsertError);
+      throw upsertError;
     }
 
-    console.log("✅ Database cleared successfully");
-  }
-
-  private static async deleteAndInsert(
-    validatedSlots: SlotInfo[]
-  ): Promise<void> {
-    const supabase = await createClient();
-
-    const { error: deleteError } = await supabase
-      .from("court_availability")
-      .delete()
-      .neq("id", 0);
-
-    if (deleteError) {
-      console.error("❌ Error clearing previous state:", deleteError);
-      throw deleteError;
-    }
-
-    const { error: insertError } = await supabase
-      .from("court_availability")
-      .insert(validatedSlots);
-
-    if (insertError) {
-      console.error("❌ Error inserting new state:", insertError);
-      throw insertError;
-    }
-
-    console.log("✅ Database updated successfully using full overwrite");
+    console.log("✅ Database updated successfully using upsert");
   }
 
   static compareStates(
