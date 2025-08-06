@@ -43,7 +43,4 @@ export type { SlotInfo } from "./better-api/transformer";
 export type { StoredSlot, NewlyAvailableSlot } from "./database/operations";
 export type { UserPreference, UserNotification } from "./notifications/service";
 export type { VenueConfig, ActivityConfig } from "./better-api/config";
-export type {
-  BookingServiceOptions,
-  BookingServiceResult,
-} from "./booking-service";
+export type { BookingService, BookingServiceResult } from "./booking-service";
