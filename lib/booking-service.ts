@@ -1,12 +1,9 @@
 import { BetterApiClient } from "./better-api/client";
-import { DataTransformer, SlotInfo } from "./better-api/transformer";
-import { getAllVenueActivities } from "./better-api/config";
+import { LtaApiClient } from "./lta-api/client";
+import { TowerHamletsApiClient } from "./tower-hamlets-api/client";
+import { SlotInfo } from "./better-api/transformer";
 import { DatabaseOperations, NewlyAvailableSlot } from "./database/operations";
 import { NotificationService } from "./notifications/service";
-
-export interface BookingServiceOptions {
-  daysToFetch?: number;
-}
 
 export interface BookingServiceResult {
   success: boolean;
@@ -21,27 +18,14 @@ export interface BookingServiceResult {
 }
 
 export class BookingService {
-  static async processBookings(
-    options: BookingServiceOptions = {}
-  ): Promise<BookingServiceResult> {
-    const { daysToFetch = 6 } = options;
+  static async processBookings(): Promise<BookingServiceResult> {
     const processingTime = new Date().toISOString();
 
     try {
-      console.log(`🎾 Starting booking processing for ${daysToFetch} days...`);
+      console.log(`🎾 Starting booking processing...`);
 
-      // Generate date range
-      const dates = DataTransformer.generateDateRange(new Date(), daysToFetch);
-
-      // Get all venue activities
-      const venueActivities = getAllVenueActivities();
-
-      console.log(
-        `📊 Fetching slots for ${venueActivities.length} venue + activity combinations across ${dates.length} dates`
-      );
-
-      // Fetch and process all slots
-      const allSlots = await this.fetchAllSlots(dates, venueActivities);
+      // Fetch and process all slots from all APIs in parallel
+      const allSlots = await this.fetchAllSlots();
       console.log(`📊 Total slots found: ${allSlots.length}`);
 
       // Get previous state and compare
@@ -72,8 +56,8 @@ export class BookingService {
         notificationsSent,
         processingTime,
         sampleSlots: allSlots.slice(0, 5),
-        datesProcessed: dates,
-        activitiesProcessed: venueActivities.map((a) => a.activity.displayName),
+        datesProcessed: [], // No longer applicable since each API handles its own date logic
+        activitiesProcessed: [], // No longer applicable since each API handles its own activities
       };
     } catch (error) {
       console.error("❌ Booking processing failed:", error);
@@ -88,71 +72,41 @@ export class BookingService {
     }
   }
 
-  private static async fetchAllSlots(
-    dates: string[],
-    venueActivities: ReturnType<typeof getAllVenueActivities>
-  ) {
-    const allSlots = [];
+  private static async fetchAllSlots(): Promise<SlotInfo[]> {
+    console.log("🎾 Fetching slots from all API clients in parallel...");
 
-    for (const date of dates) {
-      for (const { venue, activity, locationId } of venueActivities) {
-        try {
-          console.log(
-            `🔍 Fetching slots for ${activity.displayName} for ${date}...`
-          );
+    try {
+      // Call all three API clients in parallel
+      const [betterSlots, ltaSlots, towerHamletsSlots] = await Promise.all([
+        BetterApiClient.fetchAllSlots().catch((error) => {
+          console.error("❌ Failed to fetch Better API slots:", error);
+          return [];
+        }),
+        LtaApiClient.fetchAllSlots().catch((error) => {
+          console.error("❌ Failed to fetch LTA API slots:", error);
+          return [];
+        }),
+        TowerHamletsApiClient.getAllBookingTimes().catch((error) => {
+          console.error("❌ Failed to fetch Tower Hamlets API slots:", error);
+          return [];
+        }),
+      ]);
 
-          const response = await BetterApiClient.fetchBookingTimes({
-            venue: venue.venue,
-            activity: activity.activity,
-            date: date,
-          });
+      // Combine all results
+      const allSlots = [...betterSlots, ...ltaSlots, ...towerHamletsSlots];
 
-          if (response.data.length === 0) {
-            console.warn(`⚠️  No data for ${activity.displayName} on ${date}`);
-            continue;
-          }
+      console.log(`✅ Fetched ${betterSlots.length} Better API slots`);
+      console.log(`✅ Fetched ${ltaSlots.length} LTA API slots`);
+      console.log(
+        `✅ Fetched ${towerHamletsSlots.length} Tower Hamlets API slots`
+      );
+      console.log(`🎯 Total slots combined: ${allSlots.length}`);
 
-          console.log(
-            `📊 ${activity.displayName} on ${date}: found ${response.data.length} raw slots`
-          );
-
-          const transformedSlots = DataTransformer.transformBookingResponse(
-            response,
-            locationId,
-            venue.id
-          );
-
-          console.log(
-            `✅ ${activity.displayName} on ${date}: extracted ${transformedSlots.length} valid slots`
-          );
-
-          if (transformedSlots.length > 0) {
-            console.log(
-              `📋 Sample slots:`,
-              transformedSlots.slice(0, 3).map((slot) => ({
-                date: slot.date,
-                time: slot.time,
-                spaces: slot.spaces,
-                location: slot.location,
-              }))
-            );
-          }
-
-          allSlots.push(...transformedSlots);
-
-          // Be respectful to the API
-          await new Promise((resolve) => setTimeout(resolve, 500));
-        } catch (error) {
-          console.error(
-            `❌ Failed to fetch ${activity.displayName} for ${date}:`,
-            error
-          );
-          continue;
-        }
-      }
+      return allSlots;
+    } catch (error) {
+      console.error("❌ Error in parallel API calls:", error);
+      throw error;
     }
-
-    return allSlots;
   }
 
   private static async handleNotifications(

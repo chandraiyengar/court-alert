@@ -14,9 +14,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const result = await BookingService.processBookings({
-    daysToFetch,
-  });
+  const result = await BookingService.processBookings();
 
   if (!result.success) {
     return NextResponse.json(result, { status: 500 });
