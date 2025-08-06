@@ -107,21 +107,42 @@ export default function CourtAvailabilityView({
     });
   };
 
+  // Get slot duration for a venue (30 min for Burgess Park, 60 min for others)
+  const getSlotDuration = (location: string) => {
+    return location === "burgess-park-southwark" ? 30 : 60;
+  };
+
   // Format time for display
   const formatTime = (timeString: string) => {
-    const hour = parseInt(timeString.split(":")[0], 10);
-    const nextHour = hour + 1;
+    const [hourStr, minuteStr] = timeString.split(":");
+    const hour = parseInt(hourStr, 10);
+    const minute = parseInt(minuteStr, 10);
 
-    const displayStart =
-      hour > 12 ? `${hour - 12} PM` : hour === 12 ? `12 PM` : `${hour} AM`;
-    const displayEnd =
-      nextHour > 12
-        ? `${nextHour - 12} PM`
-        : nextHour === 12
-          ? `12 PM`
-          : `${nextHour} AM`;
+    // Get venue-specific slot duration
+    const slotDuration = selectedLocation
+      ? getSlotDuration(selectedLocation)
+      : 60;
 
-    return `${displayStart} - ${displayEnd}`;
+    // Calculate end time based on venue's slot duration
+    const startTotalMinutes = hour * 60 + minute;
+    const endTotalMinutes = startTotalMinutes + slotDuration;
+    const endHour = Math.floor(endTotalMinutes / 60);
+    const endMinute = endTotalMinutes % 60;
+
+    // Format start time
+    const startDisplayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+    const startAmPm = hour >= 12 ? "PM" : "AM";
+    const startMinuteDisplay =
+      minute === 0 ? "" : `:${minute.toString().padStart(2, "0")}`;
+
+    // Format end time
+    const endDisplayHour =
+      endHour > 12 ? endHour - 12 : endHour === 0 ? 12 : endHour;
+    const endAmPm = endHour >= 12 ? "PM" : "AM";
+    const endMinuteDisplay =
+      endMinute === 0 ? "" : `:${endMinute.toString().padStart(2, "0")}`;
+
+    return `${startDisplayHour}${startMinuteDisplay} ${startAmPm} - ${endDisplayHour}${endMinuteDisplay} ${endAmPm}`;
   };
 
   // Handle removing a slot

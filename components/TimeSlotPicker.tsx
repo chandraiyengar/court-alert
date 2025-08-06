@@ -77,12 +77,19 @@ export default function TimeSlotPicker({
 
   // Format time for display
   const formatTime = (timeString: string) => {
-    const hour = parseInt(timeString.split(":")[0], 10);
+    const [hourStr, minuteStr] = timeString.split(":");
+    const hour = parseInt(hourStr, 10);
+    const minute = parseInt(minuteStr, 10);
 
-    const displayStart =
-      hour > 12 ? `${hour - 12} PM` : hour === 12 ? `12 PM` : `${hour} AM`;
+    // Format hour for 12-hour display
+    const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+    const amPm = hour >= 12 ? "PM" : "AM";
 
-    return displayStart;
+    // Include minutes if not :00
+    const minuteDisplay =
+      minute === 0 ? "" : `:${minute.toString().padStart(2, "0")}`;
+
+    return `${displayHour}${minuteDisplay} ${amPm}`;
   };
 
   // Handle slot selection/deselection

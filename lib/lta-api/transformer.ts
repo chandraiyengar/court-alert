@@ -1,6 +1,6 @@
 import { SlotInfo } from "../better-api/transformer";
 import { LtaApiResponse, LtaApiClient } from "./client";
-import { isWithinLtaOperatingHours } from "./config";
+import { isWithinLtaOperatingHours, getLtaVenueConfig } from "./config";
 
 export class LtaDataTransformer {
   static transformBookingResponse(
@@ -11,6 +11,10 @@ export class LtaDataTransformer {
       console.warn("⚠️  No resources found in LTA API response");
       return [];
     }
+
+    // Get venue-specific slot duration
+    const venueConfig = getLtaVenueConfig(venueId);
+    const slotDurationMinutes = venueConfig?.slotDurationMinutes || 60; // Default to 60 minutes
 
     // Track all timeslots with both available and total courts
     const timeslotMap = new Map<string, { available: number; total: number }>();
@@ -29,13 +33,13 @@ export class LtaDataTransformer {
           // Extract just the date part (YYYY-MM-DD) from LTA's ISO date format
           const dateOnly = day.Date.split("T")[0];
 
-          // Calculate how many 1-hour slots this session covers
+          // Calculate session duration and determine number of slots
           const durationMinutes = session.EndTime - session.StartTime;
-          const hourlySlots = Math.floor(durationMinutes / 60);
+          const slots = Math.floor(durationMinutes / slotDurationMinutes);
 
-          // Create entries for each 1-hour slot within this session
-          for (let i = 0; i < hourlySlots; i++) {
-            const slotStartTime = session.StartTime + i * 60;
+          // Create entries for each slot within this session
+          for (let i = 0; i < slots; i++) {
+            const slotStartTime = session.StartTime + i * slotDurationMinutes;
             const timeString = LtaApiClient.minutesToTimeString(slotStartTime);
             const key = `${dateOnly}|${timeString}`;
 
@@ -74,7 +78,7 @@ export class LtaDataTransformer {
     }
 
     console.log(
-      `✅ Transformed ${slots.length} total LTA slots for ${venueId} (${response.Resources.length} courts)`
+      `✅ Transformed ${slots.length} total LTA slots for ${venueId} (${response.Resources.length} courts, ${slotDurationMinutes}-min slots)`
     );
     if (slots.length > 0) {
       console.log(

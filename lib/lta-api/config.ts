@@ -8,6 +8,7 @@ export interface LtaVenueConfig {
     endTime: string; // HH:MM format
   };
   timezone: string;
+  slotDurationMinutes: number; // 30 or 60 minutes
 }
 
 export const LTA_VENUE_CONFIGS: LtaVenueConfig[] = [
@@ -21,6 +22,7 @@ export const LTA_VENUE_CONFIGS: LtaVenueConfig[] = [
       endTime: "22:00",
     },
     timezone: "Europe/London",
+    slotDurationMinutes: 60,
   },
   {
     id: "hackney-downs",
@@ -32,6 +34,7 @@ export const LTA_VENUE_CONFIGS: LtaVenueConfig[] = [
       endTime: "22:00",
     },
     timezone: "Europe/London",
+    slotDurationMinutes: 60,
   },
   {
     id: "brockwell-park",
@@ -43,6 +46,7 @@ export const LTA_VENUE_CONFIGS: LtaVenueConfig[] = [
       endTime: "22:00",
     },
     timezone: "Europe/London",
+    slotDurationMinutes: 60,
   },
   {
     id: "burgess-park-southwark",
@@ -54,6 +58,7 @@ export const LTA_VENUE_CONFIGS: LtaVenueConfig[] = [
       endTime: "22:00",
     },
     timezone: "Europe/London",
+    slotDurationMinutes: 30,
   },
   {
     id: "clapham-common",
@@ -65,6 +70,7 @@ export const LTA_VENUE_CONFIGS: LtaVenueConfig[] = [
       endTime: "22:00",
     },
     timezone: "Europe/London",
+    slotDurationMinutes: 60,
   },
   {
     id: "clissold-park-hackney",
@@ -76,6 +82,7 @@ export const LTA_VENUE_CONFIGS: LtaVenueConfig[] = [
       endTime: "22:00",
     },
     timezone: "Europe/London",
+    slotDurationMinutes: 60,
   },
   {
     id: "dulwich-park",
@@ -87,6 +94,7 @@ export const LTA_VENUE_CONFIGS: LtaVenueConfig[] = [
       endTime: "22:00",
     },
     timezone: "Europe/London",
+    slotDurationMinutes: 60,
   },
   {
     id: "holland-park",
@@ -98,6 +106,7 @@ export const LTA_VENUE_CONFIGS: LtaVenueConfig[] = [
       endTime: "22:00",
     },
     timezone: "Europe/London",
+    slotDurationMinutes: 60,
   },
   {
     id: "kennington-park",
@@ -109,6 +118,7 @@ export const LTA_VENUE_CONFIGS: LtaVenueConfig[] = [
       endTime: "22:00",
     },
     timezone: "Europe/London",
+    slotDurationMinutes: 60,
   },
   {
     id: "larkhall-park",
@@ -120,6 +130,7 @@ export const LTA_VENUE_CONFIGS: LtaVenueConfig[] = [
       endTime: "22:00",
     },
     timezone: "Europe/London",
+    slotDurationMinutes: 60,
   },
   {
     id: "parliament-hill-fields",
@@ -131,6 +142,7 @@ export const LTA_VENUE_CONFIGS: LtaVenueConfig[] = [
       endTime: "22:00",
     },
     timezone: "Europe/London",
+    slotDurationMinutes: 60,
   },
   {
     id: "ravenscourt-park",
@@ -142,6 +154,7 @@ export const LTA_VENUE_CONFIGS: LtaVenueConfig[] = [
       endTime: "22:00",
     },
     timezone: "Europe/London",
+    slotDurationMinutes: 60,
   },
   {
     id: "spring-hill-park",
@@ -153,6 +166,7 @@ export const LTA_VENUE_CONFIGS: LtaVenueConfig[] = [
       endTime: "22:00",
     },
     timezone: "Europe/London",
+    slotDurationMinutes: 60,
   },
   {
     id: "tanner-street-park",
@@ -164,6 +178,7 @@ export const LTA_VENUE_CONFIGS: LtaVenueConfig[] = [
       endTime: "22:00",
     },
     timezone: "Europe/London",
+    slotDurationMinutes: 60,
   },
 ];
 
