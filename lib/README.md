@@ -26,7 +26,7 @@ lib/
 The heart of the system is the venue configuration:
 
 ```typescript
-const VENUE_CONFIGS: VenueConfig[] = [
+const BETTER_VENUE_CONFIGS: VenueConfig[] = [
   {
     id: "islington-tennis-centre",
     name: "Islington Tennis Centre",
@@ -93,7 +93,7 @@ Main orchestrator that coordinates all components:
 
 ## Adding New Venues
 
-To add a new venue, simply add it to the `VENUE_CONFIGS` array:
+To add a new venue, simply add it to the `BETTER_VENUE_CONFIGS` array:
 
 ```typescript
 {

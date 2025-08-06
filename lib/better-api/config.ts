@@ -18,7 +18,7 @@ export interface ActivityConfig {
   };
 }
 
-export const VENUE_CONFIGS: VenueConfig[] = [
+export const BETTER_VENUE_CONFIGS: VenueConfig[] = [
   {
     id: "islington-tennis-centre",
     name: "Islington Tennis Centre",
@@ -125,7 +125,7 @@ export const VENUE_CONFIGS: VenueConfig[] = [
 ];
 
 export function getVenueConfig(venueId: string): VenueConfig | undefined {
-  return VENUE_CONFIGS.find((config) => config.id === venueId);
+  return BETTER_VENUE_CONFIGS.find((config) => config.id === venueId);
 }
 
 export function getActivityConfig(
@@ -141,7 +141,7 @@ export function getAllVenueActivities(): Array<{
   activity: ActivityConfig;
   locationId: string;
 }> {
-  return VENUE_CONFIGS.flatMap((venue) =>
+  return BETTER_VENUE_CONFIGS.flatMap((venue) =>
     venue.activities.map((activity) => ({
       venue,
       activity,
