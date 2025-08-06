@@ -1,6 +1,7 @@
 "use client";
 
 import { type LocationTimeSlot } from "@/components/CourtAvailabilityView";
+import { generateBookingUrl } from "@/lib/utils";
 
 interface CourtAvailability {
   id: number;
@@ -90,17 +91,22 @@ export default function TimeSlotPicker({
 
     // If slot has availability, redirect to booking page
     if (availability > 0) {
-      const startTime = time.slice(0, 5); // Convert "14:00:00" to "14:00"
-      const endTime = `${(parseInt(time.split(":")[0], 10) + 1).toString().padStart(2, "0")}:00`;
+      const bookingResult = generateBookingUrl(selectedLocation, date, time);
 
-      const bookingUrl = `${process.env.NEXT_PUBLIC_BETTER_BOOKINGS_URL}/location/${selectedLocation}/${date}/by-time/slot/${startTime}-${endTime}`;
-
-      // Open booking page in new tab
-      window.open(bookingUrl, "_blank");
-      return;
+      if (bookingResult.url) {
+        // Open booking page in new tab
+        window.open(bookingResult.url, "_blank");
+        return;
+      } else {
+        // Handle case where no booking URL is available (e.g., Tower Hamlets)
+        console.warn(
+          `No booking URL available for ${selectedLocation} (${bookingResult.apiSource} API)`
+        );
+        // For now, we'll still allow selection for notification purposes
+      }
     }
 
-    // Only allow selection if no courts are available (full slots)
+    // Only allow selection if no courts are available (full slots) or no booking URL is available
     onSlotSelection(date, time);
   };
 
