@@ -1,5 +1,6 @@
 // defining that we need date spaces time location
 import { SlotInfo } from "../better-api/transformer";
+import { getTowerHamletsVenueConfig } from "./config";
 
 export interface TowerHamletSession {
   startTime: string;
@@ -23,7 +24,13 @@ export class TowerHamletsApiClient {
     date: string,
     location: string
   ): Promise<TowerHamletsBookingResponse> {
-    const url = `${this.getBaseUrl()}/${location}/${date}`;
+    // Get venue config to validate location and get venue slug
+    const venueConfig = getTowerHamletsVenueConfig(location);
+    if (!venueConfig) {
+      throw new Error(`Unknown Tower Hamlets venue: ${location}`);
+    }
+
+    const url = `${this.getBaseUrl()}/${venueConfig.venue}/${date}`;
 
     try {
       const response = await fetch(url, {

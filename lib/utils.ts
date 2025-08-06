@@ -2,6 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { BETTER_VENUE_CONFIGS } from "./better-api/config";
 import { LTA_VENUE_CONFIGS } from "./lta-api/config";
+import { TOWER_HAMLETS_VENUE_CONFIGS } from "./tower-hamlets-api/config";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -56,11 +57,28 @@ export function generateBookingUrl(
     return { url, apiSource: "lta" };
   }
 
-  // For Tower Hamlets locations, we don't have booking URLs yet, so return unknown
-  // This covers any location that doesn't match Better or LTA configs
+  // Check if it's a Tower Hamlets location
+  const towerHamletsLocation = TOWER_HAMLETS_VENUE_CONFIGS.find(
+    (venue) => venue.id === location
+  );
+
+  if (towerHamletsLocation) {
+    const towerHamletsBaseUrl = process.env.TOWER_HAMLET_BOOKINGS_URL;
+    if (!towerHamletsBaseUrl) {
+      console.error(
+        "TOWER_HAMLET_BOOKINGS_URL environment variable is not set"
+      );
+      return { url: "", apiSource: "tower-hamlets" };
+    }
+
+    const url = `${towerHamletsBaseUrl}/${towerHamletsLocation.venue}/${date}`;
+    return { url, apiSource: "tower-hamlets" };
+  }
+
+  // For locations that don't match any API configs, return unknown
   return {
     url: "",
-    apiSource: "tower-hamlets",
+    apiSource: "unknown",
   };
 }
 
@@ -82,6 +100,12 @@ export function getApiSource(
   const ltaMatch = LTA_VENUE_CONFIGS.find((venue) => venue.id === location);
   if (ltaMatch) return "lta";
 
-  // Assume Tower Hamlets for anything else
-  return "tower-hamlets";
+  // Check Tower Hamlets API
+  const towerHamletsMatch = TOWER_HAMLETS_VENUE_CONFIGS.find(
+    (venue) => venue.id === location
+  );
+  if (towerHamletsMatch) return "tower-hamlets";
+
+  // Return unknown for anything else
+  return "unknown";
 }
