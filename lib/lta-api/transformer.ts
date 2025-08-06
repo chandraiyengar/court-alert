@@ -12,8 +12,8 @@ export class LtaDataTransformer {
       return [];
     }
 
-    // Group available courts by date and time
-    const availabilityMap = new Map<string, number>();
+    // Track all timeslots with both available and total courts
+    const timeslotMap = new Map<string, { available: number; total: number }>();
 
     for (const resource of response.Resources) {
       if (!resource.Days || !Array.isArray(resource.Days)) {
@@ -26,11 +26,6 @@ export class LtaDataTransformer {
         }
 
         for (const session of day.Sessions) {
-          // Only count sessions where court is available (Capacity == 1)
-          if (session.Capacity !== 1) {
-            continue; // Skip unavailable courts (Capacity == 0 or other values)
-          }
-
           // Extract just the date part (YYYY-MM-DD) from LTA's ISO date format
           const dateOnly = day.Date.split("T")[0];
 
@@ -38,29 +33,39 @@ export class LtaDataTransformer {
           const durationMinutes = session.EndTime - session.StartTime;
           const hourlySlots = Math.floor(durationMinutes / 60);
 
-          // Create availability for each 1-hour slot within this session
+          // Create entries for each 1-hour slot within this session
           for (let i = 0; i < hourlySlots; i++) {
             const slotStartTime = session.StartTime + i * 60;
             const timeString = LtaApiClient.minutesToTimeString(slotStartTime);
             const key = `${dateOnly}|${timeString}`;
 
-            // Count available courts for this date/time combination
-            availabilityMap.set(key, (availabilityMap.get(key) || 0) + 1);
+            // Initialize or get existing data for this timeslot
+            const existing = timeslotMap.get(key) || { available: 0, total: 0 };
+
+            // Always count this court towards the total
+            existing.total += 1;
+
+            // Only count towards available if capacity is 1 (available)
+            if (session.Capacity === 1) {
+              existing.available += 1;
+            }
+
+            timeslotMap.set(key, existing);
           }
         }
       }
     }
 
-    // Convert aggregated data to SlotInfo array
+    // Convert timeslot data to SlotInfo array
     const slots: SlotInfo[] = [];
-    for (const [key, courtCount] of availabilityMap.entries()) {
+    for (const [key, data] of timeslotMap.entries()) {
       const [date, time] = key.split("|");
 
       const slot: SlotInfo = {
         date: date,
         time: time,
         location: venueId, // Just the venue ID, not specific court
-        spaces: courtCount, // Total number of available courts
+        spaces: data.available, // Number of available courts (maintains existing API contract)
       };
 
       if (this.isValidSlot(slot, venueId)) {
@@ -69,11 +74,17 @@ export class LtaDataTransformer {
     }
 
     console.log(
-      `✅ Transformed ${slots.length} aggregated LTA slots for ${venueId} (${response.Resources.length} courts)`
+      `✅ Transformed ${slots.length} total LTA slots for ${venueId} (${response.Resources.length} courts)`
     );
     if (slots.length > 0) {
       console.log(
         `📅 Date range: ${slots[0].date} to ${slots[slots.length - 1].date}`
+      );
+      // Log summary of availability
+      const availableSlots = slots.filter((slot) => slot.spaces > 0).length;
+      const fullyBookedSlots = slots.filter((slot) => slot.spaces === 0).length;
+      console.log(
+        `📊 Availability summary: ${availableSlots} available, ${fullyBookedSlots} fully booked`
       );
     }
     return slots;

@@ -172,7 +172,15 @@ export class TowerHamletsApiClient {
   }
 
   private static getVenues() {
-    return ["bethnal-green-gardens"];
+    return [
+      "bethnal-green-gardens",
+      "king-edward-memorial-park",
+      "poplar-rec-ground",
+      "ropemakers-field",
+      "st-johns-park",
+      "victoria-park",
+      "wapping-gardens",
+    ];
   }
 
   private static getDates(): string[] {
