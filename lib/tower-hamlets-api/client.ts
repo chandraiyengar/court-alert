@@ -7,10 +7,6 @@ export interface TowerHamletSession {
   spaces: number;
 }
 
-export interface TowerHamletsBookingResponse {
-  data: SlotInfo[];
-}
-
 export class TowerHamletsApiClient {
   private static getBaseUrl(): string {
     const url = process.env.TOWER_HAMLET_BOOKINGS_URL;
@@ -23,7 +19,7 @@ export class TowerHamletsApiClient {
   static async fetchBookingTimes(
     date: string,
     location: string
-  ): Promise<TowerHamletsBookingResponse> {
+  ): Promise<SlotInfo[]> {
     // Get venue config to validate location and get venue slug
     const venueConfig = getTowerHamletsVenueConfig(location);
     if (!venueConfig) {
@@ -56,7 +52,7 @@ export class TowerHamletsApiClient {
         date
       );
 
-      return { data: slotInfoArray };
+      return slotInfoArray;
     } catch (error) {
       console.error(
         `❌ Error fetching Tower Hamlets booking availability for ${location} on ${date}:`,
@@ -71,17 +67,17 @@ export class TowerHamletsApiClient {
     date: string,
     location: string
   ): Promise<TowerHamletSession[]> {
-    const response = await this.fetchBookingTimes(date, location);
-    return response.data.map((slot) => ({
+    const slots = await this.fetchBookingTimes(date, location);
+    return slots.map((slot) => ({
       startTime: slot.time.substring(0, 5), // Convert HH:MM:SS to HH:MM
       spaces: slot.spaces,
     }));
   }
 
-  static async getAllBookingTimes(): Promise<TowerHamletsBookingResponse[]> {
+  static async getAllBookingTimes(): Promise<SlotInfo[]> {
     const venues = this.getVenues();
     const dates = this.getDates();
-    const allResponses: TowerHamletsBookingResponse[] = [];
+    const allSlots: SlotInfo[] = [];
 
     try {
       const fetchPromises = venues.flatMap((venue) =>
@@ -89,12 +85,12 @@ export class TowerHamletsApiClient {
       );
 
       const responses = await Promise.all(fetchPromises);
-      allResponses.push(...responses);
+      allSlots.push(...responses.flat());
 
       console.log(
         `✅ Fetched booking times for ${venues.length} venues across ${dates.length} days`
       );
-      return allResponses;
+      return allSlots;
     } catch (error) {
       console.error("❌ Error fetching all booking times:", error);
       throw error;
