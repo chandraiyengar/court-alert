@@ -2,17 +2,10 @@ import { submitTimePreferences } from "@/lib/actions";
 import { createClient } from "@/utils/supabase/server";
 import CourtAvailabilityView from "@/components/CourtAvailabilityView";
 import Link from "next/link";
+import { CourtAvailability } from "@/lib/booking-types";
 
 // Force dynamic rendering since we're fetching real-time data
 export const dynamic = "force-dynamic";
-
-interface CourtAvailability {
-  id: number;
-  date: string;
-  time: string;
-  location: string;
-  spaces: number;
-}
 
 export default async function Home() {
   // Fetch court availability data server-side
@@ -23,7 +16,7 @@ export default async function Home() {
     const supabase = await createClient();
     const { data: court_availability, error: fetchError } = await supabase
       .from("court_availability")
-      .select("*");
+      .select("date, time, location, spaces");
 
     if (fetchError) {
       console.error("Error fetching court availability:", fetchError);

@@ -38,6 +38,13 @@ export interface GetBookingTimesParams {
   date?: string;
 }
 
+export type CourtAvailability = {
+  date: string;
+  time: string;
+  location: string;
+  spaces: number;
+};
+
 // Re-export types from other modules for convenience
 export type { SlotInfo } from "./better-api/transformer";
 export type { StoredSlot, NewlyAvailableSlot } from "./database/operations";

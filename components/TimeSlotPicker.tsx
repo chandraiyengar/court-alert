@@ -1,15 +1,8 @@
 "use client";
 
 import { type LocationTimeSlot } from "@/components/CourtAvailabilityView";
+import { CourtAvailability } from "@/lib/booking-types";
 import { generateBookingUrl } from "@/lib/utils";
-
-interface CourtAvailability {
-  id: number;
-  date: string;
-  time: string;
-  location: string;
-  spaces: number;
-}
 
 interface TimeSlotPickerProps {
   courtAvailability: CourtAvailability[];

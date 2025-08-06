@@ -6,14 +6,7 @@ import SelectedSlotsEmailForm from "@/components/SelectedSlotsEmailForm";
 import LocationSidebar from "@/components/LocationSidebar";
 import LocationDropdown from "@/components/LocationDropdown";
 import { type TimeSlotPreference } from "@/lib/actions";
-
-interface CourtAvailability {
-  id: number;
-  date: string;
-  time: string;
-  location: string;
-  spaces: number;
-}
+import { CourtAvailability } from "@/lib/booking-types";
 
 interface CourtAvailabilityViewProps {
   courtAvailability: CourtAvailability[];
