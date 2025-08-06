@@ -1,4 +1,6 @@
 import { TimeSlot, BookingTimesResponse } from "../booking-types";
+import { getAllVenueActivities } from "./config";
+import { DataTransformer } from "./transformer";
 
 export interface FetchBookingTimesParams {
   venue: string;
@@ -142,6 +144,139 @@ export class BetterApiClient {
     }
 
     return validSlots;
+  }
+
+  private static getDates(): string[] {
+    const dates: string[] = [];
+    const today = new Date();
+    const ukToday = new Date(
+      today.toLocaleString("en-US", { timeZone: "Europe/London" })
+    );
+
+    for (let i = 0; i < 6; i++) {
+      const date = new Date(ukToday);
+      date.setDate(ukToday.getDate() + i);
+      const dateString = date.toISOString().split("T")[0];
+      dates.push(dateString);
+    }
+
+    return dates;
+  }
+
+  public static async fetchAllSlots() {
+    const venueActivities = getAllVenueActivities();
+    const dates = BetterApiClient.getDates();
+    const allSlots = [];
+
+    for (const date of dates) {
+      for (const { venue, activity, locationId } of venueActivities) {
+        try {
+          console.log(
+            `🔍 Fetching slots for ${activity.displayName} for ${date}...`
+          );
+
+          const response = await BetterApiClient.fetchBookingTimes({
+            venue: venue.venue,
+            activity: activity.activity,
+            date: date,
+          });
+
+          if (response.data.length === 0) {
+            console.warn(`⚠️  No data for ${activity.displayName} on ${date}`);
+            continue;
+          }
+
+          console.log(
+            `📊 ${activity.displayName} on ${date}: found ${response.data.length} raw slots`
+          );
+
+          const transformedSlots = DataTransformer.transformBookingResponse(
+            response,
+            locationId,
+            venue.id
+          );
+
+          console.log(
+            `✅ ${activity.displayName} on ${date}: extracted ${transformedSlots.length} valid slots`
+          );
+
+          if (transformedSlots.length > 0) {
+            console.log(
+              `📋 Sample slots:`,
+              transformedSlots.slice(0, 3).map((slot) => ({
+                date: slot.date,
+                time: slot.time,
+                spaces: slot.spaces,
+                location: slot.location,
+              }))
+            );
+          }
+
+          allSlots.push(...transformedSlots);
+        } catch (error) {
+          console.error(
+            `❌ Failed to fetch ${activity.displayName} for ${date}:`,
+            error
+          );
+          continue;
+        }
+      }
+    }
+
+    return allSlots;
+  }
+
+  static async getAllBookingTimes(): Promise<
+    Array<{
+      venue: string;
+      activity: string;
+      date: string;
+      data: BookingTimesResponse;
+      error?: string;
+    }>
+  > {
+    const dates = this.getDates();
+    const venueActivities = getAllVenueActivities();
+
+    const results: Array<{
+      venue: string;
+      activity: string;
+      date: string;
+      data: BookingTimesResponse;
+      error?: string;
+    }> = [];
+
+    for (const { venue, activity } of venueActivities) {
+      for (const date of dates) {
+        try {
+          const data = await this.fetchBookingTimes({
+            venue: venue.venue,
+            activity: activity.activity,
+            date: date,
+          });
+
+          results.push({
+            venue: venue.venue,
+            activity: activity.activity,
+            date: date,
+            data: data,
+          });
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+
+          results.push({
+            venue: venue.venue,
+            activity: activity.activity,
+            date: date,
+            data: { data: [] },
+            error: errorMessage,
+          });
+        }
+      }
+    }
+
+    return results;
   }
 
   static generateBookingUrl(
