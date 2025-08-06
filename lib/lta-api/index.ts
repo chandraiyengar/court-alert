@@ -8,6 +8,10 @@ export type {
   LtaApiResponse,
 } from "./client";
 
+// Export fetchAllBookingTimes as a standalone function for convenience
+import { LtaApiClient } from "./client";
+export const fetchAllBookingTimes = LtaApiClient.fetchAllSlots;
+
 export {
   getLtaVenueConfig,
   getAllLtaVenues,

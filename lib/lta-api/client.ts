@@ -1,3 +1,7 @@
+import { SlotInfo } from "../better-api/transformer";
+import { getAllLtaVenues } from "./config";
+import { LtaDataTransformer } from "./transformer";
+
 export interface FetchBookingTimesParams {
   venue: string;
   startDate: string;
@@ -46,6 +50,50 @@ export class LtaApiClient {
     "user-agent":
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
   };
+
+  static async fetchAllSlots(): Promise<SlotInfo[]> {
+    const venues = getAllLtaVenues();
+
+    const today = new Date();
+    const { startDate, endDate } = LtaDataTransformer.generateDateRange(
+      today,
+      7
+    );
+
+    console.log(
+      `📋 Fetching LTA booking times for ${venues.length} venues (${startDate} to ${endDate})`
+    );
+
+    const venuePromises = venues.map(async (venueConfig) => {
+      try {
+        const response = await this.fetchBookingTimes({
+          venue: venueConfig.venue,
+          startDate,
+          endDate,
+        });
+
+        return LtaDataTransformer.transformBookingResponse(
+          response,
+          venueConfig.id
+        );
+      } catch (error) {
+        console.error(
+          `❌ Failed to fetch booking times for ${venueConfig.name}:`,
+          error
+        );
+        return [];
+      }
+    });
+
+    const allResults = await Promise.all(venuePromises);
+    const allSlots = allResults.flat();
+
+    console.log(
+      `✅ Fetched ${allSlots.length} total booking slots from ${venues.length} LTA venues`
+    );
+
+    return allSlots;
+  }
 
   static async fetchBookingTimes(
     params: FetchBookingTimesParams
