@@ -109,19 +109,32 @@ export const BETTER_VENUE_CONFIGS: VenueConfig[] = [
         })(),
     timezone: "Europe/London",
   },
+  {
+    id: "gunnersbury-park-sports-hub",
+    name: "Gunnersbury Park Sports Hub",
+    venue: "gunnersbury-park-sports-hub",
+    activities: [
+      {
+        id: "tennis-court-outdoor",
+        name: "Outdoor Tennis",
+        activity: "tennis-court-outdoor",
+        displayName: "Tennis Court (Outdoor)",
+        operatingHours: {
+          startTime: "07:00",
+          endTime: "22:00",
+        },
+      },
+    ],
+    bookingUrl: process.env.NEXT_PUBLIC_BETTER_BOOKINGS_URL
+      ? process.env.NEXT_PUBLIC_BETTER_BOOKINGS_URL + "/location"
+      : (() => {
+          throw new Error(
+            "NEXT_PUBLIC_BETTER_BOOKINGS_URL environment variable is not set"
+          );
+        })(),
+    timezone: "Europe/London",
+  },
   // Add more venues here as needed
-  // {
-  //   id: "another-venue",
-  //   name: "Another Venue",
-  //   venue: "another-venue-slug",
-  //   activities: [...],
-  //   operatingHours: {
-  //     startTime: "07:00",
-  //     endTime: "22:00",
-  //   },
-  //   bookingUrl: "",
-  //   timezone: "Europe/London",
-  // },
 ];
 
 export function getVenueConfig(venueId: string): VenueConfig | undefined {

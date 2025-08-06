@@ -178,7 +178,7 @@ export const LTA_VENUE_CONFIGS: LtaVenueConfig[] = [
       endTime: "22:00",
     },
     timezone: "Europe/London",
-    slotDurationMinutes: 60,
+    slotDurationMinutes: 30,
   },
 ];
 

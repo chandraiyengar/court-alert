@@ -7,7 +7,7 @@ Integration with the LTA Clubspark API to fetch tennis court availability data a
 - **Efficient**: Fetches multiple days and courts in single API call
 - **Aggregated**: Groups court availability by time slot (total available courts per venue)
 - **Capacity-based**: Uses `Capacity` field to determine actual availability (1=available, 0=booked)
-- **Venue-specific durations**: Supports both 30-minute (Burgess Park) and 60-minute (all others) sessions
+- **Venue-specific durations**: Supports both 30-minute (Burgess Park, Tanner Street) and 60-minute (all others) sessions
 - **Complete data**: Stores ALL timeslots, including fully booked ones (spaces=0)
 
 ## Configuration
@@ -20,7 +20,7 @@ Add venues in `config.ts` with their specific slot duration:
   venue: "BurgessParkSouthwark",
   displayName: "Burgess Park Southwark Tennis",
   operatingHours: { startTime: "07:00", endTime: "22:00" },
-  slotDurationMinutes: 30  // 30-minute slots for Burgess Park
+  slotDurationMinutes: 30  // 30-minute slots for specific venues
 },
 {
   id: "finsbury-park",
@@ -45,7 +45,7 @@ Set environment variable: `LTA_ADMIN_API_URL=https://clubspark.lta.org.uk/v0/Ven
 
 Different venues have different booking slot durations:
 
-- **Burgess Park Southwark**: 30-minute slots (e.g., 08:00-08:30, 08:30-09:00)
+- **Burgess Park Southwark & Tanner Street Park**: 30-minute slots (e.g., 08:00-08:30, 08:30-09:00)
 - **All other venues**: 60-minute slots (e.g., 08:00-09:00, 09:00-10:00)
 
 The system automatically handles this based on the `slotDurationMinutes` configuration.

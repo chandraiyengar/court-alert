@@ -107,9 +107,10 @@ export default function CourtAvailabilityView({
     });
   };
 
-  // Get slot duration for a venue (30 min for Burgess Park, 60 min for others)
+  // Get slot duration for a venue (30 min for specific venues, 60 min for others)
   const getSlotDuration = (location: string) => {
-    return location === "burgess-park-southwark" ? 30 : 60;
+    const thirtyMinuteVenues = ["burgess-park-southwark", "tanner-street-park"];
+    return thirtyMinuteVenues.includes(location) ? 30 : 60;
   };
 
   // Format time for display
