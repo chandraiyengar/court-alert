@@ -200,18 +200,6 @@ export class BetterApiClient {
             `✅ ${activity.displayName} on ${date}: extracted ${transformedSlots.length} valid slots`
           );
 
-          if (transformedSlots.length > 0) {
-            console.log(
-              `📋 Sample slots:`,
-              transformedSlots.slice(0, 3).map((slot) => ({
-                date: slot.date,
-                time: slot.time,
-                spaces: slot.spaces,
-                location: slot.location,
-              }))
-            );
-          }
-
           allSlots.push(...transformedSlots);
         } catch (error) {
           console.error(
