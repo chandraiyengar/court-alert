@@ -76,21 +76,6 @@ export class LtaDataTransformer {
         slots.push(slot);
       }
     }
-
-    console.log(
-      `✅ Transformed ${slots.length} total LTA slots for ${venueId} (${response.Resources.length} courts, ${slotDurationMinutes}-min slots)`
-    );
-    if (slots.length > 0) {
-      console.log(
-        `📅 Date range: ${slots[0].date} to ${slots[slots.length - 1].date}`
-      );
-      // Log summary of availability
-      const availableSlots = slots.filter((slot) => slot.spaces > 0).length;
-      const fullyBookedSlots = slots.filter((slot) => slot.spaces === 0).length;
-      console.log(
-        `📊 Availability summary: ${availableSlots} available, ${fullyBookedSlots} fully booked`
-      );
-    }
     return slots;
   }
 

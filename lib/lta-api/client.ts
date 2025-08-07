@@ -72,10 +72,17 @@ export class LtaApiClient {
           endDate,
         });
 
-        return LtaDataTransformer.transformBookingResponse(
+        const slots = LtaDataTransformer.transformBookingResponse(
           response,
           venueConfig.id
         );
+
+        console.log(
+          `✅ LTA API: ${venueConfig.name} on ${startDate} to ${endDate}:` +
+            `${slots.filter((slot) => slot.spaces > 0).length} available, ${slots.filter((slot) => slot.spaces === 0).length} fully booked`
+        );
+
+        return slots;
       } catch (error) {
         console.error(
           `❌ Failed to fetch booking times for ${venueConfig.name}:`,
@@ -113,14 +120,6 @@ export class LtaApiClient {
       }
 
       const data = await response.json();
-
-      console.log(
-        `📋 LTA API Response for ${venue} (${startDate} to ${endDate}):`,
-        {
-          hasResources: !!data.Resources,
-          resourceCount: data.Resources?.length || 0,
-        }
-      );
 
       return data as LtaApiResponse;
     } catch (error) {

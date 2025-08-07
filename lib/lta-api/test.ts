@@ -18,14 +18,6 @@ import {
 } from "./index";
 
 async function testLtaApi() {
-  console.log("🧪 Testing LTA API Integration...\n");
-
-  // Debug environment variables
-  console.log("🔍 Environment check:");
-  console.log(`   Working directory: ${process.cwd()}`);
-  console.log(`   LTA URL: ${process.env.LTA_ADMIN_API_URL || "NOT SET"}`);
-  console.log();
-
   try {
     // Test 1: Check configuration
     console.log("📋 Test 1: Checking LTA venue configuration");

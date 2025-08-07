@@ -62,16 +62,6 @@ export class BetterApiClient {
 
       const data = await response.json();
 
-      console.log(`📋 API Response for ${activity} on ${date}:`, {
-        hasData: !!data.data,
-        dataType: typeof data.data,
-        isDataArray: Array.isArray(data.data),
-        dataKeys:
-          data.data && typeof data.data === "object"
-            ? Object.keys(data.data)
-            : null,
-      });
-
       const timeSlots = this.parseResponseData(data, activity, date);
       const validSlots = this.validateSlots(timeSlots, activity, date);
 
@@ -95,15 +85,12 @@ export class BetterApiClient {
     if (Array.isArray(data.data)) {
       // Future dates: { data: [...] }
       timeSlots = data.data;
-      console.log(`✅ Found ${timeSlots.length} slots in data.data array`);
     } else if (data.data && typeof data.data === "object") {
       // Today with past times: { data: { "4": {...}, "5": {...} } }
       timeSlots = Object.values(data.data);
-      console.log(`✅ Found ${timeSlots.length} slots in data.data object`);
     } else if (Array.isArray(data)) {
       // Maybe the data is directly an array
       timeSlots = data as TimeSlot[];
-      console.log(`✅ Found ${timeSlots.length} slots in root array`);
     } else {
       console.warn(
         `⚠️  Unexpected response format for ${activity} on ${date}:`,
@@ -171,10 +158,6 @@ export class BetterApiClient {
     for (const date of dates) {
       for (const { venue, activity, locationId } of venueActivities) {
         try {
-          console.log(
-            `🔍 Fetching slots for ${activity.displayName} for ${date}...`
-          );
-
           const response = await BetterApiClient.fetchBookingTimes({
             venue: venue.venue,
             activity: activity.activity,
@@ -186,10 +169,6 @@ export class BetterApiClient {
             continue;
           }
 
-          console.log(
-            `📊 ${activity.displayName} on ${date}: found ${response.data.length} raw slots`
-          );
-
           const transformedSlots = DataTransformer.transformBookingResponse(
             response,
             locationId,
@@ -197,7 +176,8 @@ export class BetterApiClient {
           );
 
           console.log(
-            `✅ ${activity.displayName} on ${date}: extracted ${transformedSlots.length} valid slots`
+            `✅ BETTER API: ${activity.displayName} on ${date}:` +
+              `${transformedSlots.filter((slot) => slot.spaces > 0).length} available, ${transformedSlots.filter((slot) => slot.spaces === 0).length} fully booked`
           );
 
           allSlots.push(...transformedSlots);

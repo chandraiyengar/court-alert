@@ -39,17 +39,17 @@ export class TowerHamletsApiClient {
 
       const htmlContent = await response.text();
 
-      console.log(`📋 Tower Hamlets API Response for ${location} on ${date}:`, {
-        hasContent: !!htmlContent,
-        contentLength: htmlContent.length,
-      });
-
       const sessions = this.transformHtmlResponse(htmlContent);
       const validSlots = this.validateSessions(sessions, location, date);
       const slotInfoArray = this.transformToSlotInfo(
         validSlots,
         location,
         date
+      );
+
+      console.log(
+        `✅ Tower Hamlets API: Fetched ${slotInfoArray.length} total Tower Hamlets slots for ${location} on ${date},` +
+          `${slotInfoArray.filter((slot) => slot.spaces > 0).length} available, ${slotInfoArray.filter((slot) => slot.spaces === 0).length} fully booked`
       );
 
       return slotInfoArray;
@@ -160,10 +160,6 @@ export class TowerHamletsApiClient {
           spaces: availableSpaces,
         });
       }
-
-      console.log(
-        `✅ Parsed ${sessions.length} available time slots from HTML`
-      );
       return sessions;
     } catch (error) {
       console.error("❌ Error parsing HTML response:", error);
