@@ -115,7 +115,7 @@ export default function TimeSlotPicker({
       <table className="w-full table-fixed">
         <thead>
           <tr className="bg-gray-50 border-b">
-            <th className="p-3 font-semibold text-center border-r text-sm w-20">
+            <th className="p-3 font-semibold text-center border-r text-sm">
               Time
             </th>
             {uniqueDates.map((date) => (
