@@ -96,17 +96,17 @@ export default function TimeSlotPicker({
       if (bookingResult.url) {
         // Open booking page in new tab
         window.open(bookingResult.url, "_blank");
-        return;
       } else {
         // Handle case where no booking URL is available (e.g., Tower Hamlets)
         console.warn(
           `No booking URL available for ${selectedLocation} (${bookingResult.apiSource} API)`
         );
-        // For now, we'll still allow selection for notification purposes
       }
+      // Do not allow selecting slots that have availability
+      return;
     }
 
-    // Only allow selection if no courts are available (full slots) or no booking URL is available
+    // Only allow selection if no courts are available (full slots)
     onSlotSelection(date, time);
   };
 

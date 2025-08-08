@@ -63,10 +63,11 @@ export function generateBookingUrl(
   );
 
   if (towerHamletsLocation) {
-    const towerHamletsBaseUrl = process.env.TOWER_HAMLET_BOOKINGS_URL;
+    const towerHamletsBaseUrl =
+      process.env.NEXT_PUBLIC_TOWER_HAMLET_BOOKINGS_URL;
     if (!towerHamletsBaseUrl) {
       console.error(
-        "TOWER_HAMLET_BOOKINGS_URL environment variable is not set"
+        "NEXT_PUBLIC_TOWER_HAMLET_BOOKINGS_URL environment variable is not set"
       );
       return { url: "", apiSource: "tower-hamlets" };
     }
