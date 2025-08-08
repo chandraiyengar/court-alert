@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import TimeSlotPicker from "@/components/TimeSlotPicker";
 import SelectedSlotsEmailForm from "@/components/SelectedSlotsEmailForm";
-import LocationSidebar from "@/components/LocationSidebar";
 import LocationDropdown from "@/components/LocationDropdown";
 import { type TimeSlotPreference } from "@/lib/actions";
 import { CourtAvailability } from "@/lib/booking-types";
@@ -166,28 +165,28 @@ export default function CourtAvailabilityView({
 
   return (
     <div className="flex flex-col lg:flex-row gap-6">
-      {/* Desktop Sidebar - hidden on mobile */}
-      <div className="hidden lg:block">
-        <LocationSidebar
+      {/* Left-hand sidebar: dropdown + email/selection */}
+      <aside className="w-full lg:w-80 lg:flex-shrink-0">
+        <LocationDropdown
           uniqueLocations={uniqueLocations}
           selectedLocation={selectedLocation}
           onLocationSelect={setSelectedLocation}
           formatLocationName={formatLocationName}
         />
-      </div>
 
-      {/* Main Content */}
-      <div className="flex-1">
-        {/* Mobile Dropdown - hidden on desktop */}
-        <div className="block lg:hidden">
-          <LocationDropdown
-            uniqueLocations={uniqueLocations}
-            selectedLocation={selectedLocation}
-            onLocationSelect={setSelectedLocation}
-            formatLocationName={formatLocationName}
-          />
-        </div>
+        <SelectedSlotsEmailForm
+          selectedSlots={selectedSlots}
+          onSubmit={handleSubmit}
+          onRemoveSlot={handleRemoveSlot}
+          formatLocationName={formatLocationName}
+          formatDate={formatDate}
+          formatTime={formatTime}
+          setSubmitMessage={setSubmitMessage}
+        />
+      </aside>
 
+      {/* Right content: grid */}
+      <main className="flex-1">
         {selectedLocation ? (
           <div>
             <TimeSlotPicker
@@ -197,16 +196,6 @@ export default function CourtAvailabilityView({
               onSlotSelection={handleSlotSelection}
             />
 
-            {/* Selected Slots Summary and Email Form */}
-            <SelectedSlotsEmailForm
-              selectedSlots={selectedSlots}
-              onSubmit={handleSubmit}
-              onRemoveSlot={handleRemoveSlot}
-              formatLocationName={formatLocationName}
-              formatDate={formatDate}
-              formatTime={formatTime}
-              setSubmitMessage={setSubmitMessage}
-            />
             {submitMessage && (
               <div className="mt-3">
                 <p className="text-sm font-medium">{submitMessage}</p>
@@ -220,7 +209,7 @@ export default function CourtAvailabilityView({
             </p>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

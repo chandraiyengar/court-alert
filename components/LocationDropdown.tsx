@@ -19,6 +19,9 @@ export default function LocationDropdown({
   onLocationSelect,
   formatLocationName,
 }: LocationDropdownProps) {
+  const sortedLocations = [...uniqueLocations].sort((a, b) =>
+    formatLocationName(a).localeCompare(formatLocationName(b))
+  );
   return (
     <div className="w-full mb-6">
       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -29,7 +32,7 @@ export default function LocationDropdown({
           <SelectValue placeholder="Choose a location..." />
         </SelectTrigger>
         <SelectContent>
-          {uniqueLocations.map((location) => (
+          {sortedLocations.map((location) => (
             <SelectItem key={location} value={location}>
               {formatLocationName(location)}
             </SelectItem>

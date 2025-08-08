@@ -54,8 +54,9 @@ export default async function Home() {
           Tennis Court Alerts
         </h1>
         <p className="text-muted-foreground text-center text-sm">
-          Monitor tennis court availability across London venues and get instant
-          email alerts when your preferred time slots become available
+          Choose a venue below, then click any empty (-) slots in the grid to
+          track them. Enter your email to get notified as soon as those times
+          become available.
         </p>
       </div>
 

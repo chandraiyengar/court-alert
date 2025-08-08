@@ -80,18 +80,18 @@ export default function SelectedSlotsEmailForm({
         formatTime={formatTime}
       />
 
-      <div className="flex flex-col sm:flex-row items-center gap-3">
+      <div className="flex flex-col items-center gap-3 mt-4">
         <Input
           type="email"
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full sm:w-56"
+          className="w-full"
           disabled={isSubmitting}
         />
         <Button
           size="default"
-          className="px-6 w-full sm:w-auto"
+          className="px-6 w-full"
           onClick={handleSubmit}
           disabled={selectedSlots.length === 0 || !email.trim() || isSubmitting}
         >
