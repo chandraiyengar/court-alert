@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { Resend } from "resend";
 import { NewlyAvailableSlot } from "../database/operations";
+import { generateBookingUrl } from "../utils";
 
 export interface UserPreference {
   id: number;
@@ -134,6 +135,16 @@ export class NotificationService {
         });
         const time = slot.time.substring(0, 5);
 
+        const booking = generateBookingUrl(slot.location, slot.date, slot.time);
+        const providerLabel =
+          booking.apiSource === "better"
+            ? "Better"
+            : booking.apiSource === "lta"
+              ? "LTA ClubSpark"
+              : booking.apiSource === "tower-hamlets"
+                ? "Tower Hamlets"
+                : "Booking";
+
         return `
         <div style="background-color: #f9f9f9; padding: 12px; margin: 8px 0; border-left: 4px solid #0066cc;">
           <p style="margin: 4px 0;"><strong>📅 ${date}</strong></p>
@@ -143,10 +154,11 @@ export class NotificationService {
             slot.current_spaces > 1 ? "s" : ""
           } available</strong></p>
           <p style="margin: 8px 0 4px 0;">
-            <a href="${process.env.NEXT_PUBLIC_BETTER_BOOKINGS_URL}/location/${slot.location.replace("/", "/")}/${slot.date}/by-time" 
-               style="background-color: #0066cc; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; display: inline-block;">
-              Book This Court
-            </a>
+            ${
+              booking.url
+                ? `<a href="${booking.url}" style="background-color: #0066cc; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; display: inline-block;">Book on ${providerLabel}</a>`
+                : `<span style="color: #666;">Booking link unavailable for this provider</span>`
+            }
           </p>
         </div>
       `;
@@ -167,7 +179,7 @@ export class NotificationService {
         <div style="margin-top: 24px; padding: 16px; background-color: #e8f4f8; border-radius: 4px;">
           <p style="margin: 0; color: #0066cc; font-weight: bold;">💡 Pro Tip:</p>
           <p style="margin: 8px 0 0 0; color: #666;">
-            These courts can book up quickly! Click the "Book This Court" button above to secure your slot.
+            These courts can book up quickly! Use the booking button above to secure your slot.
           </p>
         </div>
         
